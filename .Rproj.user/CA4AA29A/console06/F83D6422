@@ -125,3 +125,44 @@ bash: cd: /stor/home/pll473/Desktop/Website: No such file or directory
 love/Website.git
 git push origin masterReinitialized existing Git repository in /stor/home/pll473/Website/.git/
 ]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git add . 
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git commit -m "first website commit"
+[master 3708483] first website commit
+ Committer: Peyton Love <pll473@educcomp01.ccbb.utexas.edu>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 47 insertions(+), 1 deletion(-)
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git remote add origin https://github.com/peytonlove/Website.git
+usage: git remote add [<options>] <name> <url>
+
+    -f, --fetch           fetch the remote branches
+    --tags                import all tags and associated objects when fetching
+                          or do not fetch any tag at all (--no-tags)
+    -t, --track <branch>  branch(es) to track
+    -m, --master <branch>
+                          master branch
+    --mirror[=<push|fetch>]
+                          set up remote as a mirror to push to or fetch from
+
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git push origin master
+Username for 'https://github.com': peytonlove
+Password for 'https://peytonlove@github.com': 
+remote: Repository not found.
+fatal: repository 'https://github.com/USERNAME/WEBSITE_REPOSITORY.git/' not found
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ cd ~/Desktop/Website 
+bash: cd: /stor/home/pll473/Desktop/Website: No such file or directory
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ 
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git init 
+Reinitialized existing Git repository in /stor/home/pll473/Website/.git/
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git add . 
+love/Website.git
+git push origin master
