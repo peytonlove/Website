@@ -1,174 +1,0 @@
-[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kgit add .
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git commit -m "any message, but you must have a message"
-[master eaf0f92] any message, but you must have a message
- Committer: Peyton Love <pll473@educcomp02.ccbb.utexas.edu>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly. Run the
-following command and follow the instructions in your editor to edit
-your configuration file:
-
-    git config --global --edit
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 63 files changed, 976 insertions(+), 2885 deletions(-)
- rewrite .Rproj.user/CA4AA29A/console06/F83D6422 (99%)
- rewrite .Rproj.user/CA4AA29A/console06/INDEX001 (84%)
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/4E9831BB
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/603FCB6F
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/82619229
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/991C258A
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/A27BD4C9
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/BA704854
- delete mode 100644 .Rproj.user/CA4AA29A/sources/s-1b65e3c6/lock_file
- rewrite .Rproj.user/shared/notebooks/paths (100%)
- create mode 100644 .gitignore
- delete mode 100644 content/blog/2015-07-23-r-rmarkdown.Rmd
- delete mode 100644 content/blog/2015-07-23-r-rmarkdown.html
- delete mode 100644 content/blog/creating-a-new-theme.md
- delete mode 100644 content/blog/goisforlovers.md
- delete mode 100644 content/blog/hugoisforlovers.md
- delete mode 100644 content/blog/migrate-from-jekyll.md
- create mode 100644 content/blog/thank-you-to-ut.Rmd
- create mode 100644 content/blog/thank-you-to-ut.html
- create mode 100644 public/blog/2020-05-13-to-my-friends.Rmd
- create mode 100644 public/blog/2020-05-13-to-my-friends.html
- create mode 100644 public/blog/2020-05-13-to-my-friends/index.html
- rewrite public/blog/index.xml (88%)
- create mode 100644 public/blog/thank-you-to-ut.Rmd
- create mode 100644 public/blog/thank-you-to-ut/index.html
- create mode 100644 public/img/yearone.png
- rewrite public/index.xml (64%)
- rewrite public/project2_files/figure-html/unnamed-chunk-3-1.png (99%)
- rewrite public/sitemap.xml (68%)
- rewrite public/tags/index.xml (73%)
- create mode 100644 public/thank-you-to-ut.Rmd
- create mode 100644 public/thank-you-to-ut/index.html
- create mode 100644 public/yearfour.png
- create mode 100644 public/yearone.png
- create mode 100644 public/yearthree.png
- create mode 100644 public/yeartwo.png
- create mode 100644 public/yeartwohalf.png
- rewrite static/project2_files/figure-html/unnamed-chunk-3-1.png (99%)
- create mode 100644 static/yearfour.png
- create mode 100644 static/yearone.png
- create mode 100644 static/yearthree.png
- create mode 100644 static/yeartwo.png
- create mode 100644 static/yeartwohalf.png
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git push origin master
-fatal: 'origin' does not appear to be a git repository
-fatal: Could not read from remote repository.
-
-Please make sure you have the correct access rights
-and the repository exists.
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git add .
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git commit -m "any message, but you must have a message"
-[master 9f351d8] any message, but you must have a message
- Committer: Peyton Love <pll473@educcomp02.ccbb.utexas.edu>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly. Run the
-following command and follow the instructions in your editor to edit
-your configuration file:
-
-    git config --global --edit
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 2 files changed, 71 insertions(+), 3 deletions(-)
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git add .
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git commit -m "any message, but you must have a message"
-[master ff2107f] any message, but you must have a message
- Committer: Peyton Love <pll473@educcomp02.ccbb.utexas.edu>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly. Run the
-following command and follow the instructions in your editor to edit
-your configuration file:
-
-    git config --global --edit
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 1 file changed, 20 insertions(+)
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git push origin master
-fatal: 'origin' does not appear to be a git repository
-fatal: Could not read from remote repository.
-
-Please make sure you have the correct access rights
-and the repository exists.
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ $ git remote set-url origin https://github.com/taylorlwolf/SDDSProject.git[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [38Pgit push origin master
-[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ccommit -m "any message, but you must have a message"[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[34Ppush origin master$ git remote set-url origin https://github.com/taylorlwolf/SDDSProject.git[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C git remote set-url origin https://github.com/taylorlwolf/SDS[1PProject.git[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[K[K[K[K[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
-[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kpeytonloveproject3.netlify.app[C peytonloveproject3.netlify.apph peytonloveproject3.netlify.appt peytonloveproject3.netlify.app [A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ct peytonloveproject3.netlify.appp[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[ peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C peytonloveproject3.netlify.app[K[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cp peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C: peytonloveproject3.netlify.a[Cp[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C/ peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C/ peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C peytonloveproject3.netlify.[1Papp[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C peytonloveproject3.netlify.a[1Ppp[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C peytonloveproject3.netlify.ap[C[K[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cs peytonloveproject3.netlify.a[Cp[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C: peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C/ peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C/ peytonloveproject3.netlify.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cpeytonloveproject3.netlify[1P.app[A]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-[C[C[C[C[C
-fatal: No such remote 'origin'
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git add .
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git commit -m "any message, but you must have a message"
-[master 6540515] any message, but you must have a message
- Committer: Peyton Love <pll473@educcomp02.ccbb.utexas.edu>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly. Run the
-following command and follow the instructions in your editor to edit
-your configuration file:
-
-    git config --global --edit
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 2 files changed, 33 insertions(+), 2 deletions(-)
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git push origin master
-fatal: 'origin' does not appear to be a git repository
-fatal: Could not read from remote repository.
-
-Please make sure you have the correct access rights
-and the repository exists.
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git add.
-git: 'add.' is not a git command. See 'git --help'.
-
-The most similar command is
-	add
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git add .
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git commit -m "any message, but you must have a message"up[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K"update"
-[master 171ee0c] update
- Committer: Peyton Love <pll473@educcomp02.ccbb.utexas.edu>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly. Run the
-following command and follow the instructions in your editor to edit
-your configuration file:
-
-    git config --global --edit
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 1 file changed, 31 insertions(+), 1 deletion(-)
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git push o[Korg[Kigin master
-fatal: 'origin' does not appear to be a git repository
-fatal: Could not read from remote repository.
-
-Please make sure you have the correct access rights
-and the repository exists.
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ cd ~/Desktop/Website 
-bash: cd: /stor/home/pll473/Desktop/Website: No such file or directory
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git init 
