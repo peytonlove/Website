@@ -1,6 +1,5 @@
-cd ~/Desktop/WWebsite 
-love/Wesbsite.git 
-git push origin masterfatal: remote part of refspec is not a valid name in /stor/home/pll473/Desktop/Website
+[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kcd ~/Desktop/Website 
+bash: cd: /stor/home/pll473/Desktop/Website: No such file or directory
 ]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ 
 ]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git init 
 Reinitialized existing Git repository in /stor/home/pll473/Website/.git/
