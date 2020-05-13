@@ -1,9 +1,7 @@
-]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ [K]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ cd ~/Desktop/PROJECT_DIRECTORY_NAME  #if you haven't already
-bash: cd: /stor/home/pll473/Desktop/PROJECT_DIRECTORY_NAME: No such file or directory
+cd ~/Desktop/WWebsite 
+love/Wesbsite.git 
+git push origin masterfatal: remote part of refspec is not a valid name in /stor/home/pll473/Desktop/Website
 ]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ 
-]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git init #initialize local git respoository
- in repository to be uploaded
-git commit -m "first website commit"
-git remote add origin https://github.com/USERNAME/WEBSITE_REPOSITORY.git #re
-git push origin masterInitialized empty Git repository in /stor/home/pll473/Website/.git/
-]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git add . #add all files in repositoory to be uploaded
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git init 
+Reinitialized existing Git repository in /stor/home/pll473/Website/.git/
+]0;/stor/home/pll473/Website]0;pll473@educcomp01: ~/Website[01;32mpll473@educcomp01[00m:[01;34m~/Website[00m$ git add . 
