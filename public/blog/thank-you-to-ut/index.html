@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Peyton Love" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Thank You to UT</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../blog/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../blog/thank-you-to-ut/">Thank You to UT</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          May 13, 2020
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<p>With everything going on in the world, I’ve realized that I’m not going to get to properly say goodbye and thank all of the people that I’ve met during my four years at UT. I figured this project would be the perfect opportunity to do so. And of course I’m going to show off how we can use R and Python to create a pretty cool blog post.</p>
+<p>Okay, so step 1 is to use “reticulate” which will allow R and Python to communicate to each other throughout this whole thing.</p>
+<pre class="r"><code>library(reticulate)</code></pre>
+<p>I’m going to be discussing each of the years I spent at UT and I want to start each post with the phrase “Some of my favorite memories this year were”.</p>
+<pre class="r"><code>#this is an R chunk
+beg &lt;-&quot;Some of my favorite memories this year were:&quot;</code></pre>
+<p>Now you can see how I’ve created personalized messages for each of of the four years during my time here in Python. I’ll be using year one as an example.</p>
+<div id="year-one" class="section level2">
+<h2>Year One</h2>
+<div class="figure">
+<img src="../../yearone.png" />
+
+</div>
+<pre class="python"><code>#this is a python chunk
+year1=&quot;Meeting my best friend at orientation (s/o Shannon). Our first football game of the season (we beat ND in triple overtime). Running up and down from the first floor of Jester where I lived to the fifth floor where my friends lived. Late night runs to Wendy&#39;s on our way back in from a night out. Spaghetti night at Chris&#39; condo (rip that $5 venmo charge). My first (unofficial) date with my boyfriend (s/o Ryan) at Moojos. Experiencing three days of ACL with one of my best friends (ily Soph). The first and only Texas OU game that I actually bought a ticket for. Staying up late with my roommate talking about anything and everything (miss you Gisela). Kayaking with friends in the middle January. J2 dinner nights. Jumping in the fountain after a Texas win.&quot;</code></pre>
+<p>Now that I’ve created my personalized reflections for year one, I’m going to integrate R and Python.</p>
+<pre class="r"><code>#this is an R chunk
+cat(c(beg, py$year1))</code></pre>
+<pre><code>## Some of my favorite memories this year were: Meeting my best friend at orientation (s/o Shannon). Our first football game of the season (we beat ND in triple overtime). Running up and down from the first floor of Jester where I lived to the fifth floor where my friends lived. Late night runs to Wendy&#39;s on our way back in from a night out. Spaghetti night at Chris&#39; condo (rip that $5 venmo charge). My first (unofficial) date with my boyfriend (s/o Ryan) at Moojos. Experiencing three days of ACL with one of my best friends (ily Soph). The first and only Texas OU game that I actually bought a ticket for. Staying up late with my roommate talking about anything and everything (miss you Gisela). Kayaking with friends in the middle January. J2 dinner nights. Jumping in the fountain after a Texas win.</code></pre>
+</div>
+<div id="year-two" class="section level2">
+<h2>Year Two</h2>
+<div class="figure">
+<img src="../../yeartwo.png" />
+
+</div>
+<pre class="python"><code>year2=&quot;Our house warming party in our new apartment. Lollapalooza with my best friends. Dressing up as complementary DNA strands for Bio Lab Halloween (ily Sawyer). Buying last minute tickets to ACL and just making it there in time to see The Killers headline Sunday night. Choosing to forgo the Texas OU game and go the fair instead. When me and Ryan took a spontaneous day trip to San Antonio. Boston Market dates with the roommates. Wine nights. Going on a medical mission trip to Panama. Studying abroad for the summer in Spain (weekend trips to Paris and Portugal).&quot;</code></pre>
+<pre class="r"><code>cat(c(beg, py$year2))</code></pre>
+<pre><code>## Some of my favorite memories this year were: Our house warming party in our new apartment. Lollapalooza with my best friends. Dressing up as complementary DNA strands for Bio Lab Halloween (ily Sawyer). Buying last minute tickets to ACL and just making it there in time to see The Killers headline Sunday night. Choosing to forgo the Texas OU game and go the fair instead. When me and Ryan took a spontaneous day trip to San Antonio. Boston Market dates with the roommates. Wine nights. Going on a medical mission trip to Panama. Studying abroad for the summer in Spain (weekend trips to Paris and Portugal).</code></pre>
+</div>
+<div id="year-three" class="section level2">
+<h2>Year Three</h2>
+<div class="figure">
+<img src="../../yearthree.png" />
+
+</div>
+<pre class="python"><code>year3=&quot;Double dates at the domain with Soph. Weekend trips to College Station. Bio lab Hallowee pt.2 (microscope slides). Living with Lauren and Luna. Mentoring my first FIG. Watching UT win Texas-OU for the first and only time during my four years here. Hiking at sculpture falls. Watching Ava grow up. Getting in to t4k. Volunteering every Friday morning at the hospital with Jean. Ryan&#39;s Graduation!!!&quot;</code></pre>
+<pre class="r"><code>cat(c(beg, py$year3))</code></pre>
+<pre><code>## Some of my favorite memories this year were: Double dates at the domain with Soph. Weekend trips to College Station. Bio lab Hallowee pt.2 (microscope slides). Living with Lauren and Luna. Mentoring my first FIG. Watching UT win Texas-OU for the first and only time during my four years here. Hiking at sculpture falls. Watching Ava grow up. Getting in to t4k. Volunteering every Friday morning at the hospital with Jean. Ryan&#39;s Graduation!!!</code></pre>
+</div>
+<div id="year-four" class="section level2">
+<h2>Year Four</h2>
+<div class="figure">
+<img src="../../yearfour.png" />
+
+</div>
+<pre class="python"><code>year4=&quot;Standing in line for 2 hours before kickoff to get into the LSU game. Going to the lights festival. Dollar Beers. Finding out I&#39;d be biking to Alaska on the Ozarks route (Gozarks!!). Getting my bike (ily Mike). Bio lab halloween round 3 (petri dishes). T4k halloween as gordon ramsay and the idiot sandwich girl. Mr Spirit. Friendsgiving. Shannon got a dog (ily Harley). Getting a concussion the day before classes started (s/o shannon for taking care of me). My first Pflug ride. Endless zoom calls with friends.&quot;</code></pre>
+<pre class="r"><code>cat(c(beg, py$year4))</code></pre>
+<pre><code>## Some of my favorite memories this year were: Standing in line for 2 hours before kickoff to get into the LSU game. Going to the lights festival. Dollar Beers. Finding out I&#39;d be biking to Alaska on the Ozarks route (Gozarks!!). Getting my bike (ily Mike). Bio lab halloween round 3 (petri dishes). T4k halloween as gordon ramsay and the idiot sandwich girl. Mr Spirit. Friendsgiving. Shannon got a dog (ily Harley). Getting a concussion the day before classes started (s/o shannon for taking care of me). My first Pflug ride. Endless zoom calls with friends.</code></pre>
+<p>Kinda crazy to sum up four years into one blog post. So grateful for all of the people that made my time at UT such an unforgettable experience.</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,70 @@
+---
+title: Thank You to UT
+author: ''
+date: '2020-05-13'
+slug: thank-you-to-ut
+categories: []
+tags: []
+description: ''
+---
+
+With everything going on in the world, I've realized that I'm not going to get to properly say goodbye and thank all of the people that I've met during my four years at UT. I figured this project would be the perfect opportunity to do so. And of course I'm going to show off how we can use R and Python to create a pretty cool blog post. 
+
+Okay, so step 1 is to use "reticulate" which will allow R and Python to communicate to each other throughout this whole thing. 
+
+```{r}
+library(reticulate)
+```
+
+I'm going to be discussing each of the years I spent at UT and I want to start each post with the phrase "Some of my favorite memories this year were".
+
+```{r}
+#this is an R chunk
+beg <-"Some of my favorite memories this year were:"
+```
+
+Now you can see how I've created personalized messages for each of of the four years during my time here in Python. I'll be using year one as an example.
+
+##Year One
+ ![](/yearone.png) 
+ 
+```{python}
+#this is a python chunk
+year1="Meeting my best friend at orientation (s/o Shannon). Our first football game of the season (we beat ND in triple overtime). Running up and down from the first floor of Jester where I lived to the fifth floor where my friends lived. Late night runs to Wendy's on our way back in from a night out. Spaghetti night at Chris' condo (rip that $5 venmo charge). My first (unofficial) date with my boyfriend (s/o Ryan) at Moojos. Experiencing three days of ACL with one of my best friends (ily Soph). The first and only Texas OU game that I actually bought a ticket for. Staying up late with my roommate talking about anything and everything (miss you Gisela). Kayaking with friends in the middle January. J2 dinner nights. Jumping in the fountain after a Texas win."
+```
+
+Now that I've created my personalized reflections for year one, I'm going to integrate R and Python. 
+```{r}
+#this is an R chunk
+cat(c(beg, py$year1))
+```
+##Year Two
+ ![](/yeartwo.png) 
+ 
+```{python}
+year2="Our house warming party in our new apartment. Lollapalooza with my best friends. Dressing up as complementary DNA strands for Bio Lab Halloween (ily Sawyer). Buying last minute tickets to ACL and just making it there in time to see The Killers headline Sunday night. Choosing to forgo the Texas OU game and go the fair instead. When me and Ryan took a spontaneous day trip to San Antonio. Boston Market dates with the roommates. Wine nights. Going on a medical mission trip to Panama. Studying abroad for the summer in Spain (weekend trips to Paris and Portugal)."
+```
+```{r}
+cat(c(beg, py$year2))
+```
+
+##Year Three
+ ![](/yearthree.png) 
+```{python}
+year3="Double dates at the domain with Soph. Weekend trips to College Station. Bio lab Hallowee pt.2 (microscope slides). Living with Lauren and Luna. Mentoring my first FIG. Watching UT win Texas-OU for the first and only time during my four years here. Hiking at sculpture falls. Watching Ava grow up. Getting in to t4k. Volunteering every Friday morning at the hospital with Jean. Ryan's Graduation!!!"
+```
+```{r}
+cat(c(beg, py$year3))
+```
+
+##Year Four
+ ![](/yearfour.png) 
+ 
+```{python}
+year4="Standing in line for 2 hours before kickoff to get into the LSU game. Going to the lights festival. Dollar Beers. Finding out I'd be biking to Alaska on the Ozarks route (Gozarks!!). Getting my bike (ily Mike). Bio lab halloween round 3 (petri dishes). T4k halloween as gordon ramsay and the idiot sandwich girl. Mr Spirit. Friendsgiving. Shannon got a dog (ily Harley). Getting a concussion the day before classes started (s/o shannon for taking care of me). My first Pflug ride. Endless zoom calls with friends."
+```
+```{r}
+cat(c(beg, py$year4))
+```
+
+Kinda crazy to sum up four years into one blog post. So grateful for all of the people that made my time at UT such an unforgettable experience.

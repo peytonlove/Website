@@ -1,21 +1,37 @@
-getwd()
-#run to install the blogdown package; wait until finished
-install.packages("blogdown")
-#run to install hugo; wait until finished
-blogdown::install_hugo()
-blogdown::new_site(theme="nurlansu/hugo-sustain")
++++
+title = "A Thank You to UT"
+description = "I though I'd use this as an opportunity to thank my friends for the last 4 years"
+tags = ["friends""gratitude""UT"]
+categories = ["friends"]
++++
 
-blogdown::build_site()
-blogdown::serve_site() 
-git add .
+With everything going on in the world, I've realized that I'm not going to get to properly say goodbye and thank all of the people that I've met during my four years at UT. I figured this project would be the perfect opportunity to do so. And of course I'm going to show off how we can use R and Python to create a pretty cool blog post. 
 
-git commit -m "any message, but you must have a message"
+Okay, so step 1 is to use the reticulate function which will allow R and Python to communicate to each other throughout this whole thing. 
 
-git push origin master
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
 library(reticulate)
+use_python("/usr/loca/bin/python")
+```
+
+I'm going to be discussing each of the years I spent at UT so about so I want to start each post with the phrase "When I began this year" and end the post with "When this year ended"
+
+```{R}
 intro <- "When I began this year,"
 exit <- "When this year ended,"
+```
+
+Now you can see how I've created personalized messages for each of of the four years during my time here.
+
+```{python}
 year1a = "I though I knew exactly how the year was going to go. I knew my roommate but we weren't super close. That's what I thought I wanted in a roommate. Classes in highschool had been easy so there's no reason why college wouldn't be the same. I was ready to join every organization because that's what I thought I needed to do for premed. I had just gotten out of a relationship and was ready to spend time on myself. I met some people at orientation and we had stayed in touch over the summer, they seemed pretty cool so I figured we might stay friends when school started. I was nervouse but excited to start this next chapter."
 year1b = "Nothing went as planned. Classes were difficult, they challenged me. Being away from home was hard at times. I hadn't found my fit in terms of a premed organization to join. But my roommate become one of my best friends, along with one of the girls I met at orientation. I joined a small group and started going to bible study each week. My faith grew. I started dating this new guy, I had known him from highschool but he went to A&M so we were trying to make long distance work. This year didn't go as expected but it was so much more than I could have ever asked. I began friendships that have lasted me through these entire four years and I am forever grateful for that."
-print(r.year1a)
+
+```
+
+Now that I've created my personalized beginning and end of year reflections for year one, I'm going to integrate R and Python using the print function. 
+```{R}
+library(reticulate)
+cat(c(intro, py$year1a))
+```
