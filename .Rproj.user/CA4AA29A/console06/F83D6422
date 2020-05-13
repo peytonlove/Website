@@ -146,3 +146,29 @@ git: 'add.' is not a git command. See 'git --help'.
 The most similar command is
 	add
 ]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git add .
+]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git commit -m "any message, but you must have a message"up[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K"update"
+[master 171ee0c] update
+ Committer: Peyton Love <pll473@educcomp02.ccbb.utexas.edu>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git push o[Korg[Kigin master
+fatal: 'origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ cd ~/Desktop/Website 
+bash: cd: /stor/home/pll473/Desktop/Website: No such file or directory
+]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ 
+]0;/stor/home/pll473/Website]0;pll473@educcomp02: ~/Website[01;32mpll473@educcomp02[00m:[01;34m~/Website[00m$ git init 
