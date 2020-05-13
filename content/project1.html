@@ -1,0 +1,361 @@
+---
+title: "Project 1: Exploratory Data Analysis"
+date: "03.15.20"
+author: "Peyton Love, PLL473"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+<p>```</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This project explores different aspects of Netflix Shows and Movies. I chose to combine two datasets by the variable, title. These datasets were each obtained from Kaggle. The first dataset that I obtained consisted of information about the title, director,cast, rating, release year, type, genre, duration, and country in which the show or movie was produced.The second dataset consists of information regarding the title, maturity rating, release year, user rating score and size. I chose these datasets because I, like many other people my age,spend a good amount of time on Netflix, and am interested in looking more into the details of the movies and shows I watch. More specifically, I was interested to see if there was any relationship between release year of the movie or show and the overally maturity and user rating that it was assigned. From the data obtained, I expected there to be a positive association between the release year and the overall maturity rating as well as the maturity rating and the user rating score.</p>
+<hr />
+<div id="part-1-tidying" class="section level2">
+<h2>Part 1: Tidying</h2>
+<p>The two datasets were imported to the global environment then renamed. They were already tidy, so I will demonstrate my use of pivot_wider and pivot longer later in the project. I renamed the data sets under the names “netflix_description” and “netflix_ratings”. The first dataset currently contains 12 variables with 6234 observations.The second dataset currently contains 7 variables with 1000 observations.</p>
+<pre class="r"><code>library(tidyverse)
+install.packages(&quot;RCurl&quot;)
+library(readxl)
+library(ggplot2)
+library(cluster)
+library(GGally)</code></pre>
+<pre class="r"><code>netflix_titles &lt;- read_excel(&quot;netflix_titles.xlsx&quot;)
+Netflix_Shows_2 &lt;- read_excel(&quot;Netflix Shows-2.xlsx&quot;)
+netflix_description &lt;- netflix_titles %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 6,234
+## Variables: 12
+## $ show_id      &lt;dbl&gt; 81145628, 80117401, 70234439, 80058654, 80125979, 801638…
+## $ type         &lt;chr&gt; &quot;Movie&quot;, &quot;Movie&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;Movie&quot;, &quot;TV Sho…
+## $ title        &lt;chr&gt; &quot;Norm of the North: King Sized Adventure&quot;, &quot;Jandino: Wha…
+## $ director     &lt;chr&gt; &quot;Richard Finn, Tim Maltby&quot;, NA, NA, NA, &quot;Fernando Lebrij…
+## $ cast         &lt;chr&gt; &quot;Alan Marriott, Andrew Toth, Brian Dobson, Cole Howard, …
+## $ country      &lt;chr&gt; &quot;United States, India, South Korea, China&quot;, &quot;United King…
+## $ date_added   &lt;dttm&gt; 2019-09-09, 2016-09-09, 2018-09-08, 2018-09-08, 2017-09…
+## $ release_year &lt;dbl&gt; 2019, 2016, 2013, 2016, 2017, 2016, 2014, 2017, 2017, 20…
+## $ rating       &lt;chr&gt; &quot;TV-PG&quot;, &quot;TV-MA&quot;, &quot;TV-Y7-FV&quot;, &quot;TV-Y7&quot;, &quot;TV-14&quot;, &quot;TV-MA&quot;,…
+## $ duration     &lt;chr&gt; &quot;90 min&quot;, &quot;94 min&quot;, &quot;1 Season&quot;, &quot;1 Season&quot;, &quot;99 min&quot;, &quot;1…
+## $ listed_in    &lt;chr&gt; &quot;Children &amp; Family Movies, Comedies&quot;, &quot;Stand-Up Comedy&quot;,…
+## $ description  &lt;chr&gt; &quot;Before planning an awesome wedding for his grandfather,…</code></pre>
+<pre class="r"><code>netflix_ratings &lt;- Netflix_Shows_2 %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 1,000
+## Variables: 7
+## $ title               &lt;chr&gt; &quot;White Chicks&quot;, &quot;Lucky Number Slevin&quot;, &quot;Grey&#39;s An…
+## $ rating              &lt;chr&gt; &quot;PG-13&quot;, &quot;R&quot;, &quot;TV-14&quot;, &quot;TV-14&quot;, &quot;TV-PG&quot;, &quot;TV-14&quot;,…
+## $ ratingLevel         &lt;chr&gt; &quot;crude and sexual humor, language and some drug c…
+## $ ratingDescription   &lt;dbl&gt; 80, 100, 90, 90, 70, 90, 110, 90, 110, 90, 70, 90…
+## $ `release year`      &lt;dbl&gt; 2004, 2006, 2016, 2008, 2014, 2016, 2013, 2017, 2…
+## $ `user rating score` &lt;dbl&gt; 82, NA, 98, 98, 94, 95, 97, 91, 98, 96, 98, 95, 7…
+## $ `user rating size`  &lt;dbl&gt; 80, 82, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 8…</code></pre>
+</div>
+<div id="part-2-joining" class="section level2">
+<h2>Part 2: Joining</h2>
+<p>Before joining the two datasets, I dropped the extraneous variables by using the select function and renamed them. The “netflix_description2” dataset now has 3 variables including title,release year,and type. The “netflix_ratings2” dataset also has 3 variables, including title, ratingDescription, and user rating score. The number of observations did not change.I joined the two datasets by the variable, title. I chose to merge via inner-join to ensure that all unmatched rows were dropped. I piped it into the unique function to ensure that there were not any duplicate rows. I also used the na.omit function to ensure that any incomplete cases were removed. A total of 6,103 observations were dropped following joining. This was a result of dropping incomplete rows and making sure that each observation was unique.</p>
+<pre class="r"><code>netflix_description2 &lt;- netflix_description %&gt;% select(title, 
+    type, release_year) %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 6,234
+## Variables: 3
+## $ title        &lt;chr&gt; &quot;Norm of the North: King Sized Adventure&quot;, &quot;Jandino: Wha…
+## $ type         &lt;chr&gt; &quot;Movie&quot;, &quot;Movie&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;Movie&quot;, &quot;TV Sho…
+## $ release_year &lt;dbl&gt; 2019, 2016, 2013, 2016, 2017, 2016, 2014, 2017, 2017, 20…</code></pre>
+<pre class="r"><code>netflix_ratings2 &lt;- netflix_ratings %&gt;% select(title, ratingDescription, 
+    `user rating score`) %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 1,000
+## Variables: 3
+## $ title               &lt;chr&gt; &quot;White Chicks&quot;, &quot;Lucky Number Slevin&quot;, &quot;Grey&#39;s An…
+## $ ratingDescription   &lt;dbl&gt; 80, 100, 90, 90, 70, 90, 110, 90, 110, 90, 70, 90…
+## $ `user rating score` &lt;dbl&gt; 82, NA, 98, 98, 94, 95, 97, 91, 98, 96, 98, 95, 7…</code></pre>
+<pre class="r"><code>netflix &lt;- inner_join(netflix_ratings2, netflix_description2, 
+    by = &quot;title&quot;) %&gt;% na.omit %&gt;% unique() %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 131
+## Variables: 5
+## $ title               &lt;chr&gt; &quot;Grey&#39;s Anatomy&quot;, &quot;Supernatural&quot;, &quot;Breaking Bad&quot;,…
+## $ ratingDescription   &lt;dbl&gt; 90, 90, 110, 90, 110, 70, 90, 90, 70, 90, 110, 90…
+## $ `user rating score` &lt;dbl&gt; 98, 95, 97, 91, 98, 98, 95, 77, 88, 96, 80, 74, 9…
+## $ type                &lt;chr&gt; &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV S…
+## $ release_year        &lt;dbl&gt; 2018, 2019, 2013, 2017, 2018, 2018, 2017, 2017, 2…</code></pre>
+</div>
+<div id="part-3-wrangling" class="section level2">
+<h2>Part 3: Wrangling</h2>
+<p>I then generated a number of summary statistics. I first arranged by release year to determine what the oldest movie in the dataset was - it was Grease. I then arranged by rating description, descending, to determine the movie with the highest overall maturity rating. From this I noticed that the movies and shows with the highest maturity ratings were generally newer movies. This prompted me to run a summary function to compare the mean maturity rating descriptions of movies and shows, filtering by before 2010 and after 2010. In comparing the obtained means, it was observed that movies and shows released before 2010 had a lower mean rating description than those released after 2010. I created a new variable using the mutate fuction to categorize the observations by a maturity ranking of high, med, or low.</p>
+<p>I then ran summary statistics for all of my numeric vairables, annalyzing the min, max, 25th and 75th quantile, median, mean, standard deviation, variation, and number of observations. After, I ran a similar function, but grouped by the categorical variables of maturity rating and type. After runing the initial summary statistics, the data was presented under 27 variables. I used the pivot_longer to organize this data by the name and value of each of these variables, then separated into the variable and its corresponding statistic. I then used pivot_wider to assign the types of statistics as variables. By summarizing this data into an easy to understand table, I demonstrated my tidying skills. An interesting observation made from these summary statistics was that there was a far greater number of movies and tv shows that fell within the high maturity rating the categorical variable that I created. The mean release year was found to be 2014, indicating that much of the Netflix content in this dataset comes from more recent years. The user rating scores and rating descriptions had similar means, suggesting that there may be a correlation between these two variables. Finally, I created a correlation table of the numeric variables, in which I determined that the strongest correlation exists between release year and maturity rating description.</p>
+<pre class="r"><code>netflix %&gt;% arrange(release_year) %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 131
+## Variables: 5
+## $ title               &lt;chr&gt; &quot;Grease&quot;, &quot;An American Tail&quot;, &quot;Balto&quot;, &quot;The Magic…
+## $ ratingDescription   &lt;dbl&gt; 60, 35, 35, 10, 80, 41, 60, 35, 100, 90, 60, 90, …
+## $ `user rating score` &lt;dbl&gt; 86, 67, 64, 81, 82, 88, 90, 95, 78, 98, 64, 89, 9…
+## $ type                &lt;chr&gt; &quot;Movie&quot;, &quot;Movie&quot;, &quot;Movie&quot;, &quot;TV Show&quot;, &quot;Movie&quot;, &quot;T…
+## $ release_year        &lt;dbl&gt; 1978, 1986, 1995, 1997, 1998, 1998, 1998, 1999, 2…</code></pre>
+<pre class="r"><code>netflix %&gt;% arrange(desc(ratingDescription)) %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 131
+## Variables: 5
+## $ title               &lt;chr&gt; &quot;The 100&quot;, &quot;Hunter X Hunter (2011)&quot;, &quot;Breaking Ba…
+## $ ratingDescription   &lt;dbl&gt; 124, 124, 110, 110, 110, 110, 110, 110, 110, 110,…
+## $ `user rating score` &lt;dbl&gt; 97, 57, 97, 98, 80, 95, 98, 94, 84, 82, 94, 99, 8…
+## $ type                &lt;chr&gt; &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV S…
+## $ release_year        &lt;dbl&gt; 2019, 2013, 2013, 2018, 2019, 2018, 2018, 2017, 2…</code></pre>
+<pre class="r"><code>netflix %&gt;% group_by(type) %&gt;% filter(release_year &gt;= 2010) %&gt;% 
+    summarise(mean_rating = mean(ratingDescription, na.rm = T)) %&gt;% 
+    glimpse()</code></pre>
+<pre><code>## Observations: 2
+## Variables: 2
+## $ type        &lt;chr&gt; &quot;Movie&quot;, &quot;TV Show&quot;
+## $ mean_rating &lt;dbl&gt; 80.38462, 85.57732</code></pre>
+<pre class="r"><code>netflix %&gt;% group_by(type) %&gt;% filter(release_year &lt; 2010) %&gt;% 
+    summarise(mean_rating = mean(ratingDescription, na.rm = T)) %&gt;% 
+    glimpse()</code></pre>
+<pre><code>## Observations: 2
+## Variables: 2
+## $ type        &lt;chr&gt; &quot;Movie&quot;, &quot;TV Show&quot;
+## $ mean_rating &lt;dbl&gt; 56.00000, 68.27273</code></pre>
+<pre class="r"><code>netflix %&gt;% select(`user rating score`, ratingDescription) %&gt;% 
+    summarise_all(mean, na.rm = T) %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 1
+## Variables: 2
+## $ `user rating score` &lt;dbl&gt; 83.78626
+## $ ratingDescription   &lt;dbl&gt; 81.35115</code></pre>
+<pre class="r"><code>netflix &lt;- netflix %&gt;% mutate(maturityrating = case_when(ratingDescription &gt; 
+    70 ~ &quot;high&quot;, 40 &lt;= ratingDescription &amp; ratingDescription &lt;= 
+    70 ~ &quot;med&quot;, ratingDescription &lt; 40 ~ &quot;low&quot;)) %&gt;% na.omit %&gt;% 
+    unique() %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 131
+## Variables: 6
+## $ title               &lt;chr&gt; &quot;Grey&#39;s Anatomy&quot;, &quot;Supernatural&quot;, &quot;Breaking Bad&quot;,…
+## $ ratingDescription   &lt;dbl&gt; 90, 90, 110, 90, 110, 70, 90, 90, 70, 90, 110, 90…
+## $ `user rating score` &lt;dbl&gt; 98, 95, 97, 91, 98, 98, 95, 77, 88, 96, 80, 74, 9…
+## $ type                &lt;chr&gt; &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV Show&quot;, &quot;TV S…
+## $ release_year        &lt;dbl&gt; 2018, 2019, 2013, 2017, 2018, 2018, 2017, 2017, 2…
+## $ maturityrating      &lt;chr&gt; &quot;high&quot;, &quot;high&quot;, &quot;high&quot;, &quot;high&quot;, &quot;high&quot;, &quot;med&quot;, &quot;h…</code></pre>
+<pre class="r"><code>netflix %&gt;% select(ratingDescription, releaseyear = release_year, 
+    `user rating score`) %&gt;% summarise_each(funs(min = min, quant25 = quantile(., 
+    0.25), median = median, quant75 = quantile(., 0.75), max = max, 
+    mean = mean, sd = sd, var = var, count = n())) %&gt;% pivot_longer(contains(&quot;_&quot;), 
+    names_to = &quot;temp&quot;, values_to = &quot;value&quot;) %&gt;% separate(temp, 
+    into = c(&quot;variable&quot;, &quot;stat&quot;), sep = &quot;_&quot;) %&gt;% pivot_wider(names_from = &quot;stat&quot;, 
+    names_repair = &quot;check_unique&quot;, values_from = &quot;value&quot;)</code></pre>
+<pre><code>## # A tibble: 3 x 10
+##   variable            min quant25 median quant75   max   mean    sd   var count
+##   &lt;chr&gt;             &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 ratingDescription    10    70       90     110   124   81.4 28.0  784.    131
+## 2 releaseyear        1978  2014.    2017    2018  2019 2014.   6.83  46.6   131
+## 3 user rating score    56    77.5     86      94    99   83.8 11.8  139.    131</code></pre>
+<pre class="r"><code>netflix %&gt;% group_by(type, maturityrating) %&gt;% select(ratingDescription, 
+    releaseyear = release_year, `user rating score`) %&gt;% summarise_each(funs(min = min, 
+    quant25 = quantile(., 0.25), median = median, quant75 = quantile(., 
+        0.75), max = max, mean = mean, sd = sd, var = var, count = n())) %&gt;% 
+    pivot_longer(contains(&quot;_&quot;), names_to = &quot;temp&quot;, values_to = &quot;value&quot;) %&gt;% 
+    separate(temp, into = c(&quot;variable&quot;, &quot;stat&quot;), sep = &quot;_&quot;) %&gt;% 
+    pivot_wider(names_from = &quot;stat&quot;, names_repair = &quot;check_unique&quot;, 
+        values_from = &quot;value&quot;)</code></pre>
+<pre><code>## # A tibble: 18 x 12
+## # Groups:   type [2]
+##    type  maturityrating variable   min quant25 median quant75   max   mean    sd
+##    &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1 Movie high           ratingD…    80    90     90     105     110   96.4 10.3 
+##  2 Movie high           release…  1998  2014.  2016    2017    2017 2013    6.93
+##  3 Movie high           user ra…    61    77.5   84      86.5    97   81.7  9.94
+##  4 Movie low            ratingD…    35    35     35      35      35   35    0   
+##  5 Movie low            release…  1986  1997   2005    2014.   2016 2004.  11.5 
+##  6 Movie low            user ra…    57    65.5   80      88      95   77   14.6 
+##  7 Movie med            ratingD…    60    60     60      60      60   60    0   
+##  8 Movie med            release…  1978  2003   2007    2009    2016 2003.  14.5 
+##  9 Movie med            user ra…    64    71     86      94      95   82   13.9 
+## 10 TV S… high           ratingD…    90    90     90     110     124   99.0 10.6 
+## 11 TV S… high           release…  2003  2016   2017    2018    2019 2016.   3.44
+## 12 TV S… high           user ra…    56    80     90      95      99   86.1 11.5 
+## 13 TV S… low            ratingD…    10    10     10      35      35   21.1 13.2 
+## 14 TV S… low            release…  1997  2017   2017    2018    2018 2015.   6.84
+## 15 TV S… low            user ra…    61    67     81      82      90   76.1 10.6 
+## 16 TV S… med            ratingD…    41    42     70      70      70   59.8 13.3 
+## 17 TV S… med            release…  1998  2010.  2017    2018    2019 2014.   6.39
+## 18 TV S… med            user ra…    56    73.8   86.5    90      98   82.8 11.5 
+## # … with 2 more variables: var &lt;dbl&gt;, count &lt;dbl&gt;</code></pre>
+<pre class="r"><code>cor_netflix &lt;- netflix %&gt;% select_if(is.numeric)
+cor_netflix %&gt;% cor()</code></pre>
+<pre><code>##                   ratingDescription user rating score release_year
+## ratingDescription         1.0000000         0.2576965    0.3354870
+## user rating score         0.2576965         1.0000000    0.0695744
+## release_year              0.3354870         0.0695744    1.0000000</code></pre>
+</div>
+<div id="part-4-visualizing" class="section level2">
+<h2>Part 4: Visualizing</h2>
+<p>The first plot I created, titled “Movie Rating by Release Year”, explores the relationship between release year and user rating score. I added a trend line using geom_smooth which demonstrates that there is a possible correlation between release year and user rating score. This information corresponds to the data obtained from the correlation table in the previous section. In this plot, I also filtered the type to ensure that this represented only data from movies. I added tick marks to the y-axis, by setting the minumin as 0, maximum as 120, and breaks as 5. The data points were colored by maturity rating to allow us to observe the overall distribution of maturity ratings among the movies as well. This data supported my previous observation of higher maturity rated movies generally having later release years.</p>
+<p>The second plot that I created, titled “Number of Movies and Shows by Maturity Rating Since 2014” explores the growth of movies and tv shows in the different maturity categories. The graph was created geom_bar to help visualize the overall number of movies and tv shows in each category. The plot was also faceted by year and help demonstrate the changes in numbers of the last 6 years. The color of the bars are representative of the type of Netflix content, either movies or TV shows. This helped to demonstrate that most of the recent releases found in this dataset are TV shows. This plot also demonstrated that the high maturity rating category experienced the most growth in the last 6 years.</p>
+<p>The third plot I created, title “Average User Rating by Maturity Level” explored the relationship between maturity level and the user ratings for each Netflix show or movie. I used the stat=summary function to plot the mean user rating scores for each maturity category. I created this plot using geom_bar, and rearranged the x-axis labels from high, low, med to high, med, low. I used dodge for the position to allow the means of the movies and tv shows to be compared side by side for each maturity category. The high maturity category had the overall highest mean user rating for both movies and tv shows.</p>
+<p>To create my final plot, a heatmap, I first created a dataset of only numeric variable, titled “tidycor”. I then created the heatmap,titled “Correlation of Netflix Numeric Variables”, which explores the correlations between the numeric variable in the dataset. From this plot, it appears that release year and maturity rating description have the strongest correlation while user rating score and release year have the weakest correlation.</p>
+<pre class="r"><code>netflix %&gt;% filter(type == &quot;Movie&quot;) %&gt;% ggplot(aes(x = release_year, 
+    y = `user rating score`)) + geom_point(aes(col = maturityrating)) + 
+    theme(plot.title = element_text(hjust = 0.5)) + guides(fill = guide_legend(title = &quot;Maturity Rating&quot;)) + 
+    ggtitle(&quot;Movie Rating by Release Year&quot;) + ylab(&quot;Rating&quot;) + 
+    xlab(&quot;Release Year&quot;) + labs(col = &quot;Maturity&quot;) + geom_smooth(method = lm, 
+    se = F) + scale_y_continuous(breaks = seq(0, 120, 5))</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>netflix %&gt;% filter(release_year &gt;= 2014) %&gt;% ggplot(aes(x = factor(maturityrating, 
+    level = c(&quot;high&quot;, &quot;med&quot;, &quot;low&quot;)), fill = type)) + geom_bar(width = 0.2) + 
+    theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 45, 
+        hjust = 1), legend.position = &quot;bottom&quot;) + ggtitle(&quot;Number of Movies and Shows by Maturity Rating Since 2014&quot;) + 
+    xlab(&quot;Maturity Rating&quot;) + ylab(&quot;Count&quot;) + facet_wrap(~release_year) + 
+    labs(fill = &quot;Type&quot;)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>netflix %&gt;% ggplot(aes(x = factor(maturityrating, level = c(&quot;high&quot;, 
+    &quot;med&quot;, &quot;low&quot;)), fill = type)) + geom_bar(aes(y = `user rating score`), 
+    stat = &quot;summary&quot;, fun.y = &quot;mean&quot;, position = &quot;dodge&quot;) + theme(plot.title = element_text(hjust = 0.5), 
+    legend.position = &quot;bottom&quot;) + ggtitle(&quot;Average User Rating by Maturity Level&quot;) + 
+    xlab(&quot;Maturity Rating&quot;) + ylab(&quot;User Rating&quot;) + labs(fill = &quot;Type&quot;)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>tidycor &lt;- netflix %&gt;% select_if(is.numeric) %&gt;% cor() %&gt;% as.data.frame %&gt;% 
+    rownames_to_column %&gt;% pivot_longer(-1, names_to = &quot;name&quot;, 
+    values_to = &quot;correlation&quot;)
+tidycor</code></pre>
+<pre><code>## # A tibble: 9 x 3
+##   rowname           name              correlation
+##   &lt;chr&gt;             &lt;chr&gt;                   &lt;dbl&gt;
+## 1 ratingDescription ratingDescription      1     
+## 2 ratingDescription user rating score      0.258 
+## 3 ratingDescription release_year           0.335 
+## 4 user rating score ratingDescription      0.258 
+## 5 user rating score user rating score      1     
+## 6 user rating score release_year           0.0696
+## 7 release_year      ratingDescription      0.335 
+## 8 release_year      user rating score      0.0696
+## 9 release_year      release_year           1</code></pre>
+<pre class="r"><code>tidycor %&gt;% ggplot(aes(rowname, name, fill = correlation)) + 
+    geom_tile() + xlab(&quot;Variable 1&quot;) + ylab(&quot;Variable 2&quot;) + labs(fill = &quot;Correlation&quot;) + 
+    geom_text(aes(label = round(correlation, 2)), color = &quot;black&quot;, 
+        size = 4) + scale_fill_gradient(low = &quot;white&quot;, high = &quot;seagreen&quot;) + 
+    ggtitle(&quot;Correlation of Netflix Numeric Variables&quot;) + theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="part-5-dimensionality-reduction" class="section level2">
+<h2>Part 5: Dimensionality Reduction</h2>
+<p>I performed PAM on my three numeric variables. I first created a dataset titled “pam_netflix” that included the three numeric variables of my “netflix” dataset. To determine the optimal number of clusters, I created an empty vector titled “sil_width” then created a for-loop to compute the average silhouette width for k= 2:10. I then plotted it and determined the optimal number of clusters from the elbow of the plot to be 2. I then clustered the object into the environment as “pam1”, using the optimal number of clusters as 2. I summarized the clusters and found the means using the summarize_if function.</p>
+<p>I computed the final medoids of the clusters to be Mighty Morphin Power Rangers for the first cluster and Quantico for the second cluster. These observations were most representative of the clusters. The accuracy with PAM was determined to be 79% after creating a dataset titled “final” in which the cluster variable was created, which assigned each observation to one of the clusters. A confusion matrix was then created and titled “confmat” which was then used with the round and sum functions to calculate the accuracy of PAM. To visualize the pairwise combinations of the three variables, ggpairs was used. Release year and maturity rating description had the strongest overall correlation out of all the variable pairs. Finally, the average silhouette widths were analyzed to determine the strength of the structures. A weak structure was found in cluster 1, but a reasonable structure was found in cluster 2.</p>
+<pre class="r"><code>pam_netflix &lt;- netflix %&gt;% select_if(is.numeric) %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 131
+## Variables: 3
+## $ ratingDescription   &lt;dbl&gt; 90, 90, 110, 90, 110, 70, 90, 90, 70, 90, 110, 90…
+## $ `user rating score` &lt;dbl&gt; 98, 95, 97, 91, 98, 98, 95, 77, 88, 96, 80, 74, 9…
+## $ release_year        &lt;dbl&gt; 2018, 2019, 2013, 2017, 2018, 2018, 2017, 2017, 2…</code></pre>
+<pre class="r"><code>sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- pam(pam_netflix, k = i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pam1 &lt;- netflix %&gt;% select_if(is.numeric) %&gt;% pam(2)
+pam1</code></pre>
+<pre><code>## Medoids:
+##       ID ratingDescription user rating score release_year
+## [1,]  89                90                88         2018
+## [2,] 105                42                73         2010
+## Clustering vector:
+##   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [38] 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 1 1 1 1 1 2 1 1
+##  [75] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 31 entries ]
+## Objective function:
+##    build     swap 
+## 18.01588 17.91743 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>pamclust &lt;- netflix %&gt;% mutate(cluster = as.factor(pam1$clustering))
+pamclust %&gt;% group_by(cluster) %&gt;% summarize_if(is.numeric, mean, 
+    na.rm = T)</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   cluster ratingDescription `user rating score` release_year
+##   &lt;fct&gt;               &lt;dbl&gt;               &lt;dbl&gt;        &lt;dbl&gt;
+## 1 1                    95.2                85.9        2016.
+## 2 2                    40.3                77.5        2010.</code></pre>
+<pre class="r"><code>netflix[pam1$id.med, ]</code></pre>
+<pre><code>## # A tibble: 2 x 6
+##   title     ratingDescription `user rating sc… type  release_year maturityrating
+##   &lt;chr&gt;                 &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;         
+## 1 Quantico                 90               88 TV S…         2018 high          
+## 2 Mighty M…                42               73 TV S…         2010 med</code></pre>
+<pre class="r"><code>final &lt;- netflix %&gt;% mutate(cluster = as.factor(pam1$clustering))
+confmat &lt;- final %&gt;% group_by(maturityrating) %&gt;% count(cluster) %&gt;% 
+    arrange(desc(n)) %&gt;% pivot_wider(names_from = &quot;cluster&quot;, 
+    values_from = &quot;n&quot;, values_fill = list(n = 0))
+confmat</code></pre>
+<pre><code>## # A tibble: 3 x 3
+## # Groups:   maturityrating [3]
+##   maturityrating   `1`   `2`
+##   &lt;chr&gt;          &lt;int&gt; &lt;int&gt;
+## 1 high              86     0
+## 2 med               12    17
+## 3 low                0    16</code></pre>
+<pre class="r"><code>round(sum(diag(as.matrix(confmat[, 2:3])))/sum(confmat[, 2:3]), 
+    3)</code></pre>
+<pre><code>## [1] 0.786</code></pre>
+<pre class="r"><code>netflix %&gt;% mutate(cluster = as.factor(pam1$clustering)) %&gt;% 
+    ggpairs(columns = c(&quot;ratingDescription&quot;, &quot;user rating score&quot;, 
+        &quot;release_year&quot;), aes(color = cluster))</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.4 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+## LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] methods   stats     graphics  grDevices utils     datasets  base     
+## 
+## other attached packages:
+##  [1] GGally_1.4.0     cluster_2.0.6    readxl_1.3.1     forcats_0.4.0   
+##  [5] stringr_1.4.0    dplyr_0.8.3      purrr_0.3.3      readr_1.3.1     
+##  [9] tidyr_1.0.0.9000 tibble_2.1.3     ggplot2_3.2.1    tidyverse_1.3.0 
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.2         lubridate_1.7.4    lattice_0.20-35    assertthat_0.2.1  
+##  [5] zeallot_0.1.0      digest_0.6.20      utf8_1.1.4         R6_2.4.0          
+##  [9] cellranger_1.1.0   plyr_1.8.4         backports_1.1.4    reprex_0.3.0      
+## [13] evaluate_0.14      httr_1.4.1         blogdown_0.18      pillar_1.4.2      
+## [17] rlang_0.4.2        lazyeval_0.2.2     rstudioapi_0.10    rmarkdown_2.1     
+## [21] labeling_0.3       munsell_0.5.0      broom_0.5.2        compiler_3.4.4    
+## [25] modelr_0.1.5       xfun_0.13          pkgconfig_2.0.2    htmltools_0.3.6   
+## [29] tidyselect_0.2.5   bookdown_0.18      reshape_0.8.8      fansi_0.4.0       
+## [33] crayon_1.3.4       dbplyr_1.4.2       withr_2.1.2        grid_3.4.4        
+## [37] nlme_3.1-131       jsonlite_1.6       gtable_0.3.0       lifecycle_0.1.0   
+## [41] DBI_1.0.0          magrittr_1.5       formatR_1.7        scales_1.0.0      
+## [45] cli_1.1.0          stringi_1.4.3      reshape2_1.4.3     fs_1.3.1          
+## [49] xml2_1.2.2         ellipsis_0.2.0.1   generics_0.0.2     vctrs_0.2.1       
+## [53] RColorBrewer_1.1-2 tools_3.4.4        glue_1.3.1         hms_0.5.3         
+## [57] yaml_2.2.0         colorspace_1.4-1   rvest_0.3.5        knitr_1.28        
+## [61] haven_2.2.0</code></pre>
+<pre><code>## [1] &quot;2020-05-13 10:39:04 CDT&quot;</code></pre>
+<pre><code>##                                        sysname 
+##                                        &quot;Linux&quot; 
+##                                        release 
+##                            &quot;4.15.0-99-generic&quot; 
+##                                        version 
+## &quot;#100-Ubuntu SMP Wed Apr 22 20:32:56 UTC 2020&quot; 
+##                                       nodename 
+##                   &quot;educcomp01.ccbb.utexas.edu&quot; 
+##                                        machine 
+##                                       &quot;x86_64&quot; 
+##                                          login 
+##                                      &quot;unknown&quot; 
+##                                           user 
+##                                       &quot;pll473&quot; 
+##                                 effective_user 
+##                                       &quot;pll473&quot;</code></pre>
+</div>
+</div>

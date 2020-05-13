@@ -1,0 +1,508 @@
+---
+title: "Project 2"
+author: "Peyton Love"
+date: ""
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+<hr />
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>For Project 2, I have chosen to use a Bachelor Dataset obtained from Kaggle. This dataset looks at a number of features of the Bachelor contestants in seasons 1-15. The initial dataset contained 423 observations, but I narrowed it down to 123 observations, in order to focus on the top 5 home States of the Bachelor Contestants. The original dataset includes the following categorical variables: Name, Occupation and Hometown. Additionaly, the orginal dataset includes the following numeric variables: Season, Age, ElimWeek, and Height. There was not sufficient data for the Height variable so I removed this variable. I created a binary variable based on the Season to evaluate if there was a relationship between the type of contestant in the early seasons compared to the late seasons. Additionally, I split the Hometown Variable into two variables “City” and “State”, allowing me to focus on the affects of the State that the contestants live in. Finally, I replaced the NAs in the elimination week category with 10s which indicate that the contestant was in fact, the winner of that season.</p>
+<pre class="r"><code>Bach &lt;- read_csv(&quot;bachelor-contestants.csv&quot;)
+# 5 most popular states
+topfive &lt;- c(&quot; California&quot;, &quot; Texas&quot;, &quot; Florida&quot;, &quot; Illinois&quot;, 
+    &quot; New York&quot;)
+Bach &lt;- Bach %&gt;% select(-Height) %&gt;% separate(Hometown, c(&quot;City&quot;, 
+    &quot;State&quot;), &quot;,&quot;) %&gt;% filter(State %in% topfive) %&gt;% mutate(ElimWeek = replace_na(ElimWeek, 
+    10))
+# Create Binary Variable
+Bach$SeasonType &lt;- cut(Bach$Season, breaks = 2, labels = c(&quot;Early&quot;, 
+    &quot;Late&quot;))
+Bach &lt;- Bach %&gt;% mutate(Season_Type = ifelse(Bach$SeasonType == 
+    &quot;Early&quot;, 1, 0))
+head(Bach)</code></pre>
+<pre><code>## # A tibble: 6 x 9
+##   Name     Age Occupation    City   State ElimWeek Season SeasonType Season_Type
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;            &lt;dbl&gt;
+## 1 Trist…    29 Miami Heat D… Miami  &quot; Fl…        6      1 Early                1
+## 2 Shann…    24 Financial Ma… Dallas &quot; Te…        5      1 Early                1
+## 3 Chris…    28 Attorney      Bonita &quot; Ca…        3      1 Early                1
+## 4 LaNea…    23 Actress       Los A… &quot; Ca…        3      1 Early                1
+## 5 Alexa     27 Special Ed. … Bever… &quot; Ca…        2      1 Early                1
+## 6 Amy       28 Production C… New Y… &quot; Ne…        2      1 Early                1</code></pre>
+</div>
+<div id="manova" class="section level3">
+<h3>MANOVA</h3>
+<p>Before any tests were conducted, the multivariate normality, and homogeneity of covariance assumptions were eyeballed using bivariate density plots and covariance matrices. It was determined that the assumptions were not met. A one-way MANOVA was first performed to examine the effect of State on Season and Elimination Week of the contestants. The results indicate that there was a difference between the 5 states for at least 1 of the 2 numeric variables. For this reason, a univariate ANOVA was then run for each variable. The results of the one way ANOVA indicated that for Season, at least one State differs significantly. A post-hoc t test was performed on Season to determine which groups differed.The following number of tests were run: 1 MANOVA,2 ANOVAs,and 10 t-tests. The probability of a Type 1 error was calculated to be 0.4866579 if anadjusted. The Bonferroni adjusted significance level that should be use is 0.003846154. After the significance level was then adjusted for the post-hoc test, Florida and New York differed significantly from each other in terms of Seasons in which their contestant were on.</p>
+<pre class="r"><code># Check multivariate assumption
+ggplot(Bach, aes(x = Season, y = ElimWeek)) + geom_point(alpha = 0.5) + 
+    geom_density_2d(h = 2) + coord_fixed() + facet_wrap(~State)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Homogenity of co(variance)
+covmats &lt;- Bach %&gt;% group_by(State) %&gt;% do(covs = cov(.[6:7]))
+for (i in 1:5) {
+    print(as.character(covmats$State[i]))
+    print(covmats$covs[i])
+}</code></pre>
+<pre><code>## [1] &quot; California&quot;
+## [[1]]
+##          ElimWeek    Season
+## ElimWeek 8.403812  2.478723
+## Season   2.478723 43.914894
+## 
+## [1] &quot; Florida&quot;
+## [[1]]
+##           ElimWeek    Season
+## ElimWeek  5.950216 -2.837662
+## Season   -2.837662 32.253247
+## 
+## [1] &quot; Illinois&quot;
+## [[1]]
+##          ElimWeek    Season
+## ElimWeek 2.374269  3.298246
+## Season   3.298246 33.426901
+## 
+## [1] &quot; New York&quot;
+## [[1]]
+##          ElimWeek   Season
+## ElimWeek      1.4  0.50000
+## Season        0.5 41.36364
+## 
+## [1] &quot; Texas&quot;
+## [[1]]
+##          ElimWeek   Season
+## ElimWeek 9.146245  8.76087
+## Season   8.760870 47.81423</code></pre>
+<pre class="r"><code># MANOVA
+man_bach &lt;- manova(cbind(ElimWeek, Season) ~ State, data = Bach)
+summary(man_bach)</code></pre>
+<pre><code>##            Df  Pillai approx F num Df den Df  Pr(&gt;F)  
+## State       4 0.14898   2.3743      8    236 0.01778 *
+## Residuals 118                                         
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># One way ANOVA
+summary.aov(man_bach)</code></pre>
+<pre><code>##  Response ElimWeek :
+##              Df Sum Sq Mean Sq F value Pr(&gt;F)
+## State         4  29.74  7.4345  1.1278 0.3468
+## Residuals   118 777.89  6.5923               
+## 
+##  Response Season :
+##              Df Sum Sq Mean Sq F value   Pr(&gt;F)   
+## State         4  573.5  143.38  3.5184 0.009449 **
+## Residuals   118 4808.6   40.75                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># Post-hoc t test:Season
+pairwise.t.test(Bach$Season, Bach$State, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Bach$Season and Bach$State 
+## 
+##            California  Florida  Illinois  New York
+##  Florida  0.0142      -        -         -        
+##  Illinois 0.1129      0.5079   -         -        
+##  New York 0.2113      0.0048   0.0262    -        
+##  Texas    0.4298      0.0056   0.0431    0.5510   
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code># Type 1 Error
+1 - (0.95^13)</code></pre>
+<pre><code>## [1] 0.4866579</code></pre>
+<pre class="r"><code># Bonferroni Correction
+0.05/13</code></pre>
+<pre><code>## [1] 0.003846154</code></pre>
+<pre class="r"><code>pairwise.t.test(Bach$Season, Bach$State, p.adj = &quot;bonferroni&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  Bach$Season and Bach$State 
+## 
+##            California  Florida  Illinois  New York
+##  Florida  0.142       -        -         -        
+##  Illinois 1.000       1.000    -         -        
+##  New York 1.000       0.048    0.262     -        
+##  Texas    1.000       0.056    0.431     1.000    
+## 
+## P value adjustment method: bonferroni</code></pre>
+</div>
+<div id="randomization-test" class="section level3">
+<h3>Randomization Test</h3>
+<p>A randomization test for the difference in means was performed on the dataset. This test used the following variables: Age and Elimination Week. These variables were chosen to help examine whether or not age had any impact the week in which a contestant was eliminated. The contestants were grouped into two age categories, young and old. Below are the null and alternative hypothesis. H0: mean elimination week of bachelor contestants is the same for young vs old contestants Ha: mean elimination week of bachelor contestants is different for young vs old contestants The randomization test produced a p-value of 0.9322 which is similar to the p-value of the Welch’s t-test. The p-value &gt; 0.05 indicates that the mean elimination week of bachelor contestants does not differ significantly for young vs old contestants. A plot was created to visualize the null and t-statistic. This confirmed that the elimination week did not differ signifcantly between age groups.</p>
+<pre class="r"><code># Randomization Test
+rand_dist &lt;- vector()
+Bach_rand &lt;- Bach
+Bach_rand$AgeGroup &lt;- cut(Bach_rand$Age, breaks = 2, labels = c(&quot;Young&quot;, 
+    &quot;Old&quot;))
+for (i in 1:5000) {
+    Bach_rand &lt;- data.frame(ElimWeek = sample(Bach_rand$ElimWeek), 
+        AgeGroup = Bach_rand$AgeGroup)
+    rand_dist[i] &lt;- mean(Bach_rand[Bach_rand$AgeGroup == &quot;Young&quot;, 
+        ]$ElimWeek) - mean(Bach_rand[Bach_rand$AgeGroup == &quot;Old&quot;, 
+        ]$ElimWeek)
+}
+
+Bach_rand %&gt;% group_by(AgeGroup) %&gt;% summarize(mean = mean(ElimWeek)) %&gt;% 
+    summarize(`mean_diff:` = diff(mean))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean_diff:`
+##          &lt;dbl&gt;
+## 1        0.213</code></pre>
+<pre class="r"><code>mean(rand_dist &gt; 0.0516129 | rand_dist &lt; -0.0516129)</code></pre>
+<pre><code>## [1] 0.929</code></pre>
+<pre class="r"><code># Welch&#39;s t-test
+t.test(data = Bach_rand, ElimWeek ~ AgeGroup)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  ElimWeek by AgeGroup
+## t = -0.41807, df = 54.84, p-value = 0.6775
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.2335440  0.8077376
+## sample estimates:
+## mean in group Young   mean in group Old 
+##            3.053763            3.266667</code></pre>
+<pre class="r"><code># Null Distribution
+summary(aov(ElimWeek ~ AgeGroup, data = Bach_rand))</code></pre>
+<pre><code>##              Df Sum Sq Mean Sq F value Pr(&gt;F)
+## AgeGroup      1    1.0   1.028   0.154  0.695
+## Residuals   121  806.6   6.666</code></pre>
+<pre class="r"><code>F_obs &lt;- 0.225
+Fs &lt;- replicate(5000, {
+    bach_new &lt;- Bach_rand %&gt;% mutate(ElimWeek = sample(ElimWeek))
+    SSW &lt;- bach_new %&gt;% group_by(AgeGroup) %&gt;% summarize(SSW = sum((ElimWeek - 
+        mean(ElimWeek))^2)) %&gt;% summarize(sum(SSW)) %&gt;% pull
+    SSB &lt;- bach_new %&gt;% mutate(mean = mean(ElimWeek)) %&gt;% group_by(AgeGroup) %&gt;% 
+        mutate(groupmean = mean(ElimWeek)) %&gt;% summarize(SSB = sum((mean - 
+        groupmean)^2)) %&gt;% summarize(sum(SSB)) %&gt;% pull
+    (SSB/1)/(SSW/197)
+})
+
+{
+    hist(Fs, prob = T)
+    abline(v = F_obs, col = &quot;red&quot;, add = T)
+}</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(Fs &gt; F_obs)</code></pre>
+<pre><code>## [1] 0.7128</code></pre>
+</div>
+<div id="linear-regression" class="section level3">
+<h3>Linear Regression</h3>
+<p>A linear regression model was built to predict Season from Age (mean centered) and State, and their interaction. Interpretting the intercept, predicted Season for an average Aged, Californian is 10.49987 (Season 10).For contestants of average Age, non-californians have average/predicted season that is 0.0311 times higher Californians. The Season for contestants from Florida is 3.78 times greater than in the California group on average. The Season for contestants from Illinois is 2.95 times greater than in the California group on average.The Season for contestants from Illinois is 4.09 times less than in the California group on average.The Season for contestants from Illinois is 1.238 times less than in the California group on average. The slope for Age on Season is 0.52 times lower for Florida contestants compared to Californian contestants. The slope for Age on Season is 0.318 times lower for Illinois contestants compared to Californian contestants. The slope for Age on Season is 1.03 times higher for New York contestants compared to Californian contestants.The slope for Age on Season is 0.04 times higher for Texas contestants compared to Californian contestants. Assumptions for Homoskedacity look okay, but linearity is questionable. The model does not meet the normality assumption. After recomputing regression results with robust standard errors, Florida contestants remain with a significantly greater Season than Californians. Additionally, the slope for Age on Season is now significantly greater for New York contestants compared to Californian contestants. The model explains 0.1318663 of the variation in the outcome.</p>
+<pre class="r"><code>Bach_lin &lt;- Bach %&gt;% mutate(Age_c = Bach$Age - mean(Bach$Age))
+fit &lt;- lm(Season ~ Age_c * State, data = Bach_lin)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Season ~ Age_c * State, data = Bach_lin)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -12.049  -5.391   1.002   4.688  10.988 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          10.49987    0.92813  11.313   &lt;2e-16 ***
+## Age_c                 0.03112    0.29289   0.106   0.9156    
+## State Florida         3.78014    1.69394   2.232   0.0276 *  
+## State Illinois        2.95349    1.76651   1.672   0.0973 .  
+## State New York       -4.09135    2.36138  -1.733   0.0859 .  
+## State Texas          -1.23852    1.66877  -0.742   0.4595    
+## Age_c:State Florida  -0.52281    0.63823  -0.819   0.4144    
+## Age_c:State Illinois -0.31845    0.52440  -0.607   0.5449    
+## Age_c:State New York  1.03499    0.79527   1.301   0.1958    
+## Age_c:State Texas     0.04431    0.67494   0.066   0.9478    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6.43 on 113 degrees of freedom
+## Multiple R-squared:  0.1319, Adjusted R-squared:  0.06272 
+## F-statistic: 1.907 on 9 and 113 DF,  p-value: 0.05779</code></pre>
+<pre class="r"><code>ggplot(Bach_lin, aes(x = Age_c, y = Season)) + geom_point() + 
+    geom_smooth(method = &quot;lm&quot;, formula = y ~ 1, se = F, fullrange = T, 
+        aes(color = State)) + theme(legend.position = &quot;none&quot;) + 
+    ggtitle(&quot;t-test&quot;) + xlab(&quot; &quot;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Checking linearity and Homoskedacity
+resids &lt;- fit$residuals
+fitvals &lt;- fit$fitted.values
+ggplot() + geom_point(aes(fitvals, resids)) + geom_hline(yintercept = 0, 
+    col = &quot;red&quot;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-4-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 14.094, df = 9, p-value = 0.119</code></pre>
+<pre class="r"><code># Checking Normality
+ggplot() + geom_qq(aes(sample = resids)) + geom_qq_line(aes(sample = resids), 
+    color = &quot;red&quot;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-4-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>shapiro.test(resids)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resids
+## W = 0.95799, p-value = 0.0007348</code></pre>
+<pre class="r"><code># Robust SE
+summary(fit)$coef</code></pre>
+<pre><code>##                         Estimate Std. Error     t value     Pr(&gt;|t|)
+## (Intercept)          10.49987349  0.9281289 11.31294743 2.662600e-20
+## Age_c                 0.03112033  0.2928903  0.10625251 9.155704e-01
+## State Florida         3.78013869  1.6939436  2.23156118 2.761701e-02
+## State Illinois        2.95348623  1.7665103  1.67193262 9.730451e-02
+## State New York       -4.09134668  2.3613811 -1.73260750 8.589376e-02
+## State Texas          -1.23851604  1.6687726 -0.74217184 4.595231e-01
+## Age_c:State Florida  -0.52281351  0.6382269 -0.81916564 4.144162e-01
+## Age_c:State Illinois -0.31845174  0.5244033 -0.60726497 5.448934e-01
+## Age_c:State New York  1.03498544  0.7952712  1.30142450 1.957603e-01
+## Age_c:State Texas     0.04430735  0.6749368  0.06564667 9.477751e-01</code></pre>
+<pre class="r"><code>coeftest(fit, vcov = vcovHC(fit))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                       Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          10.499873   0.983180 10.6795  &lt; 2e-16 ***
+## Age_c                 0.031120   0.278970  0.1116  0.91137    
+## State Florida         3.780139   1.864081  2.0279  0.04492 *  
+## State Illinois        2.953486   1.645603  1.7948  0.07536 .  
+## State New York       -4.091347   2.066762 -1.9796  0.05018 .  
+## State Texas          -1.238516   2.072767 -0.5975  0.55136    
+## Age_c:State Florida  -0.522814   0.757482 -0.6902  0.49148    
+## Age_c:State Illinois -0.318452   0.506153 -0.6292  0.53051    
+## Age_c:State New York  1.034985   0.417964  2.4763  0.01476 *  
+## Age_c:State Texas     0.044307   0.930287  0.0476  0.96210    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># Proportion of variation
+summary(fit)$r.sq</code></pre>
+<pre><code>## [1] 0.1318663</code></pre>
+</div>
+<div id="bootstrapping" class="section level3">
+<h3>Bootstrapping</h3>
+<p>The previous model was rerun with bootstrapping from the standard errors. The standard errors compare well to the rubust standard errors and standard errors of the original model.</p>
+<pre class="r"><code>sample &lt;- replicate(5000, {
+    boot_bach &lt;- Bach_lin[sample(nrow(Bach_lin), replace = TRUE), 
+        ]
+    fit2 &lt;- lm(Season ~ Age_c * State, data = boot_bach)
+    coef(fit2)
+    
+})
+sample %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept)     Age_c State Florida State Illinois State New York State Texas
+## 1   0.9770358 0.2716528      1.718967        1.61234       2.172735    1.973418
+##   Age_c:State Florida Age_c:State Illinois Age_c:State New York
+## 1           0.6854654             0.517305                   NA
+##   Age_c:State Texas
+## 1         0.8216177</code></pre>
+</div>
+<div id="logistic-regression" class="section level3">
+<h3>Logistic Regression</h3>
+<p>A logistic regression was created, predicting whether the contestant appeared on a early or late season from their age and the state they live in. From the logistical, the AUC was calculated to be 0.6839493 which is not great. A confusion matrix was also created for this model, which indicated the number of true positives/negative and false positives/negatives. From this matrix, the TPR, TNR, and Accuracy were calculated to be 0.45, 0.8378378, and 0.6504065 respectively. The PPV of this model was 0.6. Next, a density plot of the log-odds by the binary season type variable was created. The ROC plot of the model produce and AUC of 0.6839493 which is not great. The 10-fold CV produced an average out-of-sample Accuracy,Specificity, and Sensitivity/Recall of 0.5352564,0.7444048, and 0.3103571. The AUC of this model was 0.624623 which is worse than the original.</p>
+<pre class="r"><code>Bach_log &lt;- Bach %&gt;% mutate(Age_c = Bach$Age - mean(Bach$Age))
+# Logistic Regression
+fit_log &lt;- glm(Season_Type ~ Age_c * State, data = Bach_log, 
+    family = &quot;binomial&quot;)
+prob &lt;- predict(fit_log, type = &quot;response&quot;)
+truth &lt;- Bach_log$Season_Type
+class_diag(prob, truth)</code></pre>
+<pre><code>##         acc      sens      spec ppv       auc
+## 1 0.6504065 0.3673469 0.8378378 0.6 0.6839493</code></pre>
+<pre class="r"><code># Confusion Matrix
+table(predict = as.numeric(prob &gt; 0.5), truth = Bach_log$Season_Type) %&gt;% 
+    addmargins</code></pre>
+<pre><code>##        truth
+## predict   0   1 Sum
+##     0    62  31  93
+##     1    12  18  30
+##     Sum  74  49 123</code></pre>
+<pre class="r"><code># TPR
+18/40</code></pre>
+<pre><code>## [1] 0.45</code></pre>
+<pre class="r"><code># TNR
+62/74</code></pre>
+<pre><code>## [1] 0.8378378</code></pre>
+<pre class="r"><code># Accuracy
+(62 + 18)/123</code></pre>
+<pre><code>## [1] 0.6504065</code></pre>
+<pre class="r"><code># Density Plot
+Bach_log$logit &lt;- predict(fit_log, type = &quot;link&quot;)
+Bach_log %&gt;% ggplot() + geom_density(aes(logit, color = SeasonType, 
+    fill = SeasonType), alpha = 0.4) + theme(legend.position = c(0.85, 
+    0.85)) + geom_vline(xintercept = 0) + xlab(&quot;logit (log-odds)&quot;) + 
+    geom_rug(aes(logit, color = SeasonType)) + geom_text(x = -5, 
+    y = 0.07, label = &quot;TN = 62&quot;) + geom_text(x = -1.75, y = 0.008, 
+    label = &quot;FN = 31&quot;) + geom_text(x = 1, y = 0.006, label = &quot;FP = 12&quot;) + 
+    geom_text(x = 5, y = 0.04, label = &quot;TP = 18&quot;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ROC Plot
+ROCplot &lt;- ggplot(Bach_log) + geom_roc(aes(d = Season_Type, m = prob), 
+    n.cuts = 0)
+ROCplot</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-6-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.6839493</code></pre>
+<pre class="r"><code># 10 fold
+set.seed(1234)
+k = 10  #choose number of folds
+data &lt;- Bach_log[sample(nrow(Bach_log)), ]  #randomly order rows
+folds &lt;- cut(seq(1:nrow(Bach_log)), breaks = k, labels = F)  #create folds
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data[folds != i, ]
+    test &lt;- data[folds == i, ]
+    truth &lt;- test$Season_Type
+    fit &lt;- glm(Season_Type ~ Age_c + State, data = train, family = &quot;binomial&quot;)
+    probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+diags %&gt;% summarize_all(mean)</code></pre>
+<pre><code>##         acc      sens      spec ppv      auc
+## 1 0.5352564 0.3103571 0.7444048 NaN 0.624623</code></pre>
+<p>LASSO regression was first run on to predict the binary Season vairable. After running this regression the following variables were retained: Elimination Week and State: Illinois. Using these variables, a 10 fold CV was run and the drop in the AUC compared to previous models indicates signs of overfitting. The out of sample accuracy, however, was higher.</p>
+<pre class="r"><code># Find best variables
+Bach_lasso &lt;- Bach %&gt;% select(-City, -Occupation, -SeasonType, 
+    -Name)
+head(Bach_lasso)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##     Age State         ElimWeek Season Season_Type
+##   &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
+## 1    29 &quot; Florida&quot;           6      1           1
+## 2    24 &quot; Texas&quot;             5      1           1
+## 3    28 &quot; California&quot;        3      1           1
+## 4    23 &quot; California&quot;        3      1           1
+## 5    27 &quot; California&quot;        2      1           1
+## 6    28 &quot; New York&quot;          2      1           1</code></pre>
+<pre class="r"><code>library(glmnet)
+y &lt;- as.matrix(Bach_lasso$Season_Type)
+x &lt;- model.matrix(Season_Type ~ -1 + ., data = Bach_lasso)[, 
+    -1]
+head(x)</code></pre>
+<pre><code>##   State California State Florida State Illinois State New York State Texas
+## 1                0             1              0              0           0
+## 2                0             0              0              0           1
+## 3                1             0              0              0           0
+## 4                1             0              0              0           0
+## 5                1             0              0              0           0
+## 6                0             0              0              1           0
+##   ElimWeek Season
+## 1        6      1
+## 2        5      1
+## 3        3      1
+## 4        3      1
+## 5        2      1
+## 6        2      1</code></pre>
+<pre class="r"><code>x &lt;- scale(x)
+cv &lt;- cv.glmnet(x, y, family = &quot;binomial&quot;)
+lasso &lt;- glmnet(x, y, family = &quot;binomial&quot;, lambda = cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 8 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                           s0
+## (Intercept)       -5.9961232
+## State California   .        
+## State Florida      .        
+## State Illinois    -0.3530743
+## State New York     .        
+## State Texas        0.1874208
+## ElimWeek           1.7662358
+## Season           -41.0415508</code></pre>
+<pre class="r"><code># CV Lasso Model
+set.seed(1234)
+k = 10
+Bach_lasso$Illinois &lt;- ifelse(Bach_lasso$State == &quot; IL&quot;, 1, 0)
+head(Bach_lasso)</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##     Age State         ElimWeek Season Season_Type Illinois
+##   &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt;
+## 1    29 &quot; Florida&quot;           6      1           1        0
+## 2    24 &quot; Texas&quot;             5      1           1        0
+## 3    28 &quot; California&quot;        3      1           1        0
+## 4    23 &quot; California&quot;        3      1           1        0
+## 5    27 &quot; California&quot;        2      1           1        0
+## 6    28 &quot; New York&quot;          2      1           1        0</code></pre>
+<pre class="r"><code>data &lt;- Bach_lasso %&gt;% sample_frac  #put rows of dataset in random order
+folds &lt;- ntile(1:nrow(data), n = 10)  #create fold labels
+diags &lt;- NULL
+for (i in 1:k) {
+    train &lt;- data[folds != i, ]  #create training set (all but fold i)
+    test &lt;- data[folds == i, ]  #create test set (just fold i)
+    truth &lt;- test$Season_Type  #save truth labels from fold i
+    fit &lt;- glm(Season_Type ~ ElimWeek + Illinois, data = train, 
+        family = &quot;binomial&quot;)
+    probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+    diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+diags %&gt;% summarize_all(mean)</code></pre>
+<pre><code>##        acc sens spec ppv       auc
+## 1 0.599359    0    1 NaN 0.3997834</code></pre>
+<pre><code>## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.4 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+## LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] methods   stats     graphics  grDevices utils     datasets  base     
+## 
+## other attached packages:
+##  [1] glmnet_2.0-16    foreach_1.4.4    Matrix_1.2-12    vegan_2.4-6     
+##  [5] lattice_0.20-35  permute_0.9-4    plotROC_2.2.1    lmtest_0.9-37   
+##  [9] zoo_1.8-6        sandwich_2.5-1   forcats_0.4.0    stringr_1.4.0   
+## [13] dplyr_0.8.3      purrr_0.3.3      readr_1.3.1      tidyr_1.0.0.9000
+## [17] tibble_2.1.3     ggplot2_3.2.1    tidyverse_1.3.0  knitr_1.28      
+## 
+## loaded via a namespace (and not attached):
+##  [1] httr_1.4.1       jsonlite_1.6     modelr_0.1.5     assertthat_0.2.1
+##  [5] cellranger_1.1.0 yaml_2.2.0       pillar_1.4.2     backports_1.1.4 
+##  [9] glue_1.3.1       digest_0.6.20    rvest_0.3.5      colorspace_1.4-1
+## [13] htmltools_0.3.6  plyr_1.8.4       pkgconfig_2.0.2  broom_0.5.2     
+## [17] haven_2.2.0      bookdown_0.18    scales_1.0.0     mgcv_1.8-23     
+## [21] generics_0.0.2   ellipsis_0.2.0.1 withr_2.1.2      lazyeval_0.2.2  
+## [25] cli_1.1.0        magrittr_1.5     crayon_1.3.4     readxl_1.3.1    
+## [29] evaluate_0.14    fs_1.3.1         fansi_0.4.0      nlme_3.1-131    
+## [33] MASS_7.3-49      xml2_1.2.2       blogdown_0.18    tools_3.4.4     
+## [37] hms_0.5.3        formatR_1.7      lifecycle_0.1.0  munsell_0.5.0   
+## [41] reprex_0.3.0     cluster_2.0.6    compiler_3.4.4   rlang_0.4.2     
+## [45] grid_3.4.4       iterators_1.0.10 rstudioapi_0.10  labeling_0.3    
+## [49] rmarkdown_2.1    codetools_0.2-15 gtable_0.3.0     DBI_1.0.0       
+## [53] R6_2.4.0         lubridate_1.7.4  zeallot_0.1.0    utf8_1.1.4      
+## [57] stringi_1.4.3    parallel_3.4.4   Rcpp_1.0.2       vctrs_0.2.1     
+## [61] dbplyr_1.4.2     tidyselect_0.2.5 xfun_0.13</code></pre>
+<pre><code>## [1] &quot;2020-05-13 10:40:14 CDT&quot;</code></pre>
+<pre><code>##                                        sysname 
+##                                        &quot;Linux&quot; 
+##                                        release 
+##                            &quot;4.15.0-99-generic&quot; 
+##                                        version 
+## &quot;#100-Ubuntu SMP Wed Apr 22 20:32:56 UTC 2020&quot; 
+##                                       nodename 
+##                   &quot;educcomp01.ccbb.utexas.edu&quot; 
+##                                        machine 
+##                                       &quot;x86_64&quot; 
+##                                          login 
+##                                      &quot;unknown&quot; 
+##                                           user 
+##                                       &quot;pll473&quot; 
+##                                 effective_user 
+##                                       &quot;pll473&quot;</code></pre>
+</div>

@@ -1,0 +1,265 @@
+---
+title: "Project 2"
+author: "Peyton Love"
+date: ""
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r global_options, include=FALSE}
+#LEAVE THIS CHUNK ALONE!
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
+
+library(tidyverse)
+library(dplyr)
+library(sandwich)
+library(lmtest)
+library(readr)
+library(plotROC)
+library(vegan)
+
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+```
+
+---
+
+### Introduction
+
+For Project 2, I have chosen to use a Bachelor Dataset obtained from Kaggle. This dataset looks at a number of features of the Bachelor contestants in seasons 1-15. The initial dataset contained 423 observations, but I narrowed it down to 123 observations, in order to focus on the top 5 home States of the Bachelor Contestants. The original dataset includes the following categorical variables: Name, Occupation and Hometown. Additionaly, the orginal dataset includes the following numeric variables: Season, Age, ElimWeek, and Height. There was not sufficient data for the Height variable so I removed this variable. I created a binary variable based on the Season to evaluate if there was a relationship between the type of contestant in the early seasons compared to the late seasons. Additionally, I split the Hometown Variable into two variables "City" and "State", allowing me to focus on the affects of the State that the contestants live in. Finally, I replaced the NAs in the elimination week category with 10s which indicate that the contestant was in fact, the winner of that season.
+
+```{R}
+Bach <-read_csv("bachelor-contestants.csv")
+#5 most popular states
+topfive <- c(" California", " Texas"," Florida"," Illinois"," New York")
+Bach<-Bach%>%select(-Height)%>%separate(Hometown,c("City","State"),",")%>%
+  filter(State %in% topfive)%>%mutate(ElimWeek = replace_na(ElimWeek, 10))
+#Create Binary Variable
+Bach$SeasonType <- cut(Bach$Season, breaks=2, labels=c("Early","Late"))
+Bach<-Bach%>%mutate(Season_Type=ifelse(Bach$SeasonType=="Early",1,0))
+head(Bach)
+```
+
+
+### MANOVA
+
+Before any tests were conducted, the multivariate normality, and homogeneity of covariance assumptions were eyeballed using bivariate density plots and covariance matrices. It was determined that the assumptions were not met. A one-way MANOVA was first performed to examine the effect of State on Season and Elimination Week of the contestants. The results indicate that there was a difference between the 5 states for at least 1 of the 2 numeric variables. For this reason, a univariate ANOVA was then run for each variable. The results of the one way ANOVA indicated that for Season, at least one State differs significantly. A post-hoc t test was performed on Season to determine which groups differed.The following number of tests were run: 1 MANOVA,2 ANOVAs,and 10 t-tests. The probability of a Type 1 error was calculated to be 0.4866579 if anadjusted. The Bonferroni adjusted significance level that should be use is 0.003846154. After the significance level was then adjusted for the post-hoc test, Florida and New York differed significantly from each other in terms of Seasons in which their contestant were on.
+```{R}
+#Check multivariate assumption
+ggplot(Bach, aes(x = Season, y = ElimWeek)) +
+geom_point(alpha = .5) + geom_density_2d(h=2) + coord_fixed() + facet_wrap(~State)
+#Homogenity of co(variance)
+covmats<-Bach%>%group_by(State)%>%do(covs=cov(.[6:7]))
+for(i in 1:5){print(as.character(covmats$State[i])); print(covmats$covs[i])}
+#MANOVA
+man_bach<-manova(cbind(ElimWeek,Season)~State, data=Bach)
+summary(man_bach)
+#One way ANOVA
+summary.aov(man_bach)
+#Post-hoc t test:Season
+pairwise.t.test(Bach$Season,Bach$State,p.adj="none")
+#Type 1 Error
+1-(.95^13)
+#Bonferroni Correction
+0.05/13
+pairwise.t.test(Bach$Season,Bach$State,p.adj="bonferroni")
+```
+
+### Randomization Test
+
+A randomization test for the difference in means was performed on the dataset. This test used the following variables: Age and Elimination Week. These variables were chosen to help examine whether or not age had any impact the week in which a contestant was eliminated. The contestants were grouped into two age categories, young and old. Below are the null and alternative hypothesis.
+H0: mean elimination week of bachelor contestants is the same for young vs old contestants
+Ha: mean elimination week of bachelor contestants is different for young vs old contestants
+The randomization test produced a p-value of 0.9322 which is similar to the p-value of the Welch's t-test. The p-value > 0.05 indicates that the mean elimination week of bachelor contestants does not differ significantly for young vs old contestants. A plot was created to visualize the null and t-statistic. This confirmed that the elimination week did not differ signifcantly between age groups. 
+```{R}
+#Randomization Test
+rand_dist<-vector()
+Bach_rand<-Bach
+Bach_rand$AgeGroup <- cut(Bach_rand$Age, breaks=2, labels=c("Young","Old"))
+for(i in 1:5000){
+Bach_rand<-data.frame(ElimWeek=sample(Bach_rand$ElimWeek),AgeGroup=Bach_rand$AgeGroup)
+rand_dist[i]<-mean(Bach_rand[Bach_rand$AgeGroup=="Young",]$ElimWeek)-
+mean(Bach_rand[Bach_rand$AgeGroup=="Old",]$ElimWeek)}
+
+Bach_rand %>% group_by(AgeGroup)%>%summarize(mean=mean(ElimWeek))%>%summarize(`mean_diff:`=diff(mean))
+
+mean(rand_dist>0.0516129	|rand_dist< -0.0516129	)
+
+#Welch's t-test
+t.test(data=Bach_rand,ElimWeek~AgeGroup)
+
+#Null Distribution
+summary(aov(ElimWeek~AgeGroup,data=Bach_rand))
+F_obs <-0.225
+Fs<-replicate(5000,{ 
+bach_new<-Bach_rand%>%mutate(ElimWeek=sample(ElimWeek)) 
+SSW<- bach_new%>%group_by(AgeGroup)%>%
+  summarize(SSW=sum((ElimWeek-mean(ElimWeek))^2))%>% 
+  summarize(sum(SSW))%>%pull
+SSB<- bach_new%>%mutate(mean=mean(ElimWeek))%>%group_by(AgeGroup)%>%
+  mutate(groupmean=mean(ElimWeek))%>%summarize(SSB=sum((mean-groupmean)^2))%>%
+  summarize(sum(SSB))%>%pull
+(SSB/1)/(SSW/197) 
+})
+
+{hist(Fs,prob = T); abline(v=F_obs, col="red", add=T)}
+mean(Fs>F_obs)
+```
+
+### Linear Regression
+
+A linear regression model was built to predict Season from Age (mean centered) and State, and their interaction. Interpretting the intercept, predicted Season for an average Aged, Californian is 10.49987 (Season 10).For contestants of average Age, non-californians have average/predicted season that is 0.0311 times higher Californians. The Season for contestants from Florida is 3.78 times greater than in the California group on average. The Season for contestants from Illinois is 2.95 times greater than in the California group on average.The Season for contestants from Illinois is 4.09 times less than in the California group on average.The Season for contestants from Illinois is 1.238 times less than in the California group on average. The slope for Age on Season is 0.52 times lower for Florida contestants compared to Californian contestants. The slope for Age on Season is 0.318 times lower for Illinois contestants compared to Californian contestants. The slope for Age on Season is 1.03 times higher for New York contestants compared to Californian contestants.The slope for Age on Season is 0.04 times higher for Texas contestants compared to Californian contestants. Assumptions for Homoskedacity look okay, but linearity is questionable. The model does not meet the normality assumption. After recomputing regression results with robust standard errors, Florida contestants remain with a significantly greater Season than Californians. Additionally, the slope for Age on Season is now significantly greater for New York contestants compared to Californian contestants. The model explains 0.1318663 of the variation in the outcome.
+```{R}
+Bach_lin<-Bach%>%mutate(Age_c=Bach$Age-mean(Bach$Age))
+fit<-lm(Season~Age_c*State,data=Bach_lin)
+summary(fit)
+ggplot(Bach_lin, aes(x=Age_c, y=Season))+geom_point()+
+  geom_smooth(method="lm",formula=y~1,se=F,fullrange=T,aes(color=State))+
+theme(legend.position="none")+ggtitle("t-test")+xlab(" ")
+
+#Checking linearity and Homoskedacity 
+resids<-fit$residuals
+fitvals<-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col="red")
+bptest(fit)
+
+#Checking Normality
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color='red')
+shapiro.test(resids)
+
+#Robust SE
+summary(fit)$coef
+coeftest(fit, vcov = vcovHC(fit))
+
+#Proportion of variation
+summary(fit)$r.sq
+```
+
+### Bootstrapping
+
+The previous model was rerun with bootstrapping from the standard errors. The standard errors compare well to the rubust standard errors and standard errors of the original model.
+```{R}
+sample <-replicate(5000, {
+boot_bach <-Bach_lin[sample(nrow(Bach_lin),replace = TRUE),]
+fit2 <-lm(Season ~ Age_c*State, data=boot_bach)
+coef(fit2)
+
+})
+sample %>% t %>% as.data.frame %>% summarize_all(sd)
+```
+
+
+### Logistic Regression
+
+A logistic regression was created, predicting whether the contestant appeared on a early or late season from their age and the state they live in. From the logistical, the AUC was calculated to be 0.6839493 which is not great. A confusion matrix was also created for this model, which indicated the number of true positives/negative and false positives/negatives. From this matrix, the TPR, TNR, and Accuracy were calculated to be 0.45, 0.8378378, and 0.6504065 respectively. The PPV of this model was 0.6. Next, a density plot of the log-odds by the binary season type variable was created.  The ROC plot of the model produce and AUC of 0.6839493 which is not great. The 10-fold CV produced an average out-of-sample Accuracy,Specificity, and Sensitivity/Recall of 0.5352564,0.7444048, and 0.3103571. The AUC of this model was 0.624623 which is worse than the original.
+```{R}
+Bach_log <- Bach%>%mutate(Age_c=Bach$Age-mean(Bach$Age))
+#Logistic Regression
+fit_log<- glm(Season_Type~Age_c*State, data=Bach_log, family="binomial")
+prob<- predict(fit_log, type="response")
+truth <- Bach_log$Season_Type
+class_diag(prob,truth)
+#Confusion Matrix
+table(predict=as.numeric(prob>.5),truth=Bach_log$Season_Type)%>%addmargins
+#TPR
+18/40
+#TNR
+62/74
+#Accuracy
+(62+18)/123
+#Density Plot
+Bach_log$logit<-predict(fit_log,type="link")
+Bach_log%>%ggplot()+geom_density(aes(logit,color=SeasonType,fill=SeasonType), alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab("logit (log-odds)")+
+  geom_rug(aes(logit,color=SeasonType))+
+  geom_text(x=-5,y=.07,label="TN = 62")+
+  geom_text(x=-1.75,y=.008,label="FN = 31")+
+  geom_text(x=1,y=.006,label="FP = 12")+
+  geom_text(x=5,y=.04,label="TP = 18")
+#ROC Plot
+ROCplot<-ggplot(Bach_log)+geom_roc(aes(d=Season_Type,m=prob), n.cuts=0) 
+ROCplot
+calc_auc(ROCplot)
+#10 fold
+set.seed(1234)
+k=10 #choose number of folds
+data<-Bach_log[sample(nrow(Bach_log)),] #randomly order rows
+folds<-cut(seq(1:nrow(Bach_log)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+train<-data[folds!=i,]
+test<-data[folds==i,]
+truth<-test$Season_Type
+fit<-glm(Season_Type~Age_c+State,data=train,family="binomial")
+probs<-predict(fit,newdata = test,type="response")
+diags<-rbind(diags,class_diag(probs,truth))}
+diags%>%summarize_all(mean)
+
+```
+
+LASSO regression was first run on to predict the binary Season vairable. After running this regression the following variables were retained: Elimination Week and State: Illinois. Using these variables, a 10 fold CV was run and the drop in the AUC compared to previous models indicates signs of overfitting. The out of sample accuracy, however, was higher. 
+
+```{R}
+#Find best variables
+Bach_lasso<-Bach%>%select(-City,-Occupation,-SeasonType,-Name)
+head(Bach_lasso)
+library(glmnet)
+y<-as.matrix(Bach_lasso$Season_Type) 
+x<-model.matrix(Season_Type~-1+.,data=Bach_lasso)[,-1] 
+head(x)
+x<-scale(x)
+cv<-cv.glmnet(x,y,family="binomial")
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso)
+#CV Lasso Model
+set.seed(1234)
+k=10
+Bach_lasso$Illinois<-ifelse(Bach_lasso$State==" IL",1,0)
+head(Bach_lasso)
+data <- Bach_lasso %>% sample_frac #put rows of dataset in random order
+folds <- ntile(1:nrow(data),n=10) #create fold labels
+diags<-NULL
+for(i in 1:k){
+train <- data[folds!=i,] #create training set (all but fold i)
+test <- data[folds==i,] #create test set (just fold i)
+truth <- test$Season_Type #save truth labels from fold i
+fit <- glm(Season_Type~ElimWeek+Illinois,data=train, family="binomial")
+probs <- predict(fit, newdata=test, type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+```
+
+
+```{R, echo=F}
+## DO NOT DELETE THIS CHUNK!
+sessionInfo()
+Sys.time()
+Sys.info()
+```
